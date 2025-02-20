@@ -44,21 +44,80 @@ v3 - Calculadora de economia desde a parada
 				const totalDaysDifference = Math.floor(dataEmMs / millisecondsInDay);
 				const totalSecondsDifference = Math.floor(dataEmMs / 1000);
 				const yearDifference = Math.floor(dataEmMs / millisecondsInYear);
-				const monthDifference = Math.floor(dataEmMs / millisecondsInMonth);
+				const monthDifference = Math.floor((dataEmMs % millisecondsInYear) / millisecondsInMonth);
 				const dayDifference = Math.floor((dataEmMs % millisecondsInMonth) / millisecondsInDay);
 				const hourDifference = Math.floor((dataEmMs % millisecondsInDay) / millisecondsInHour);
 				const minuteDifference = Math.floor((dataEmMs % millisecondsInHour) / millisecondsInMinute)
 				const secondDifference = Math.floor((dataEmMs % millisecondsInMinute) / 1000)
-				
+
+				let anosCaption = 'anos';
+				if (yearDifference == 1) {
+					anosCaption = 'ano';
+				}
+
+				let mesesCaption = 'meses';
+				if (monthDifference == 1) {
+					mesesCaption = 'mês';
+				}
+
+				let totalDiasCaption = 'dias';
+				if (totalDaysDifference == 1) {
+					totalDiasCaption = 'dia';
+				}
+
+				let diasCaption = 'dias';
+				if (dayDifference == 1) {
+					diasCaption = 'dia';
+				}
+
+				let horasCaption = 'horas';
+				if (hourDifference == 1) {
+					horasCaption = 'hora';
+				}
+
+				let minutosCaption = 'minutos';
+				if (minuteDifference == 1) {
+					minutosCaption = 'minuto';
+				}
+
+				let segundosCaption = 'segundos';
+				if (secondDifference == 1) {
+					segundosCaption = 'segundo';
+				}
+
 				return {
-					'totalSegundos': totalSecondsDifference,
-					'totalDias': totalDaysDifference,
-					'segundos': secondDifference,
-					'minutos': minuteDifference,
-					'horas': hourDifference,
-					'dias': dayDifference,
-					'meses': monthDifference,
-					'anos': yearDifference
+					'totalSegundos': {
+						'diff': totalSecondsDifference,
+						'caption': segundosCaption
+					},
+					'totalDias': {
+						'diff': totalDaysDifference,
+						'caption': totalDiasCaption
+					},
+					'segundos': {
+						'diff': secondDifference,
+						'caption': segundosCaption
+					},
+					'minutos': {
+						'diff': minuteDifference,
+						'caption': minutosCaption
+					},
+					'horas': {
+						'diff': hourDifference,
+						'caption': horasCaption
+					},
+					'dias': {
+						'diff': dayDifference,
+						'caption': diasCaption
+					},
+					'meses': {
+						'diff': monthDifference,
+						'caption': mesesCaption
+					},
+					'anos': {
+						'diff': yearDifference,
+						'caption': anosCaption
+					},
 				}
 			};
 
@@ -78,17 +137,17 @@ v3 - Calculadora de economia desde a parada
 			function AtualizaContador() {
 				const timeDifferenceMS = MsDiff(startDate);
 				const timeDiff = ConvertMS(timeDifferenceMS);
-				const valorEconomizado = CalculaEconomia(mediaPorSegundo, timeDiff.totalSegundos);
+				const valorEconomizado = CalculaEconomia(mediaPorSegundo, timeDiff.totalSegundos.diff);
 			
 				document.getElementById('calculoEconomia').innerHTML = valorEconomizado;
-				document.getElementById('textoIntro').innerHTML = `Sem fumar desde o dia <strong>${startDateFormatado}</strong> - <strong>${timeDiff.totalDias}</strong> dias`;
+				document.getElementById('textoIntro').innerHTML = `Sem cigarro desde o dia <strong>${startDateFormatado}</strong> - <strong>${timeDiff.totalDias.diff}</strong> ${timeDiff.totalDias.caption}`;
 				document.getElementById('contagemDias').innerHTML = 
-					`<strong>${timeDiff.anos}</strong> anos, 
-					<strong>${timeDiff.meses}</strong> meses, 
-					<strong>${timeDiff.dias}</strong> dias, 
-					<strong>${timeDiff.horas}</strong> horas, 
-					<strong>${timeDiff.minutos}</strong> minutos e
-					<strong>${timeDiff.segundos}</strong> segundos`;
+					`<strong>${timeDiff.anos.diff}</strong> ${timeDiff.anos.caption}, 
+					<strong>${timeDiff.meses.diff}</strong> ${timeDiff.meses.caption}, 
+					<strong>${timeDiff.dias.diff}</strong> ${timeDiff.dias.caption}, 
+					<strong>${timeDiff.horas.diff}</strong> ${timeDiff.horas.caption}, 
+					<strong>${timeDiff.minutos.diff}</strong> ${timeDiff.minutos.caption} e
+					<strong>${timeDiff.segundos.diff}</strong> ${timeDiff.segundos.caption}`;
 			}
 
 			// Atualiza o contador a cada 1 segundo

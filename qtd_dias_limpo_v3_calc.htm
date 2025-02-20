@@ -1,0 +1,155 @@
+<!-- 
+v3 - Calculadora de economia desde a parada 
+-->
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Calculadora de Sobriedade</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+	<script>
+		window.onload = function() {
+			console.log('Início');
+			const startDate = new Date(2023, 10, 19, 3); // mês com base 0, às 3h
+			const startDateFormatado = FormatDate(startDate);
+			const valorCarteira = 10
+			const carteiraPorDia = 10
+			const mediaPorSegundo = (valorCarteira * carteiraPorDia) / (60 * 60 * 24)
+
+			function FormatDate(data) { // Formata uma data no formato DD/MM/AA com zeros na frente
+				const day = String(data.getDate()).padStart(2, '0');
+				const month = String(data.getMonth() + 1).padStart(2, '0');
+				const year = data.getFullYear();
+				const formattedDate = `${day}/${month}/${year}`;
+				return formattedDate;
+			};
+			
+			function MsDiff(data) { // Calcula a diferença de uma data até a data de hoje em Milissegundos
+				const today = new Date(); // Atualiza a data atual
+				const msDiff = today - data;
+				return msDiff
+			};
+
+			// Converte MS em ANOS, MESES, DIAS, HORAS, MINUTOS E SEGUNDOS
+			function ConvertMS(dataEmMs) {
+				const millisecondsInMinute = 1000 * 60;
+				const millisecondsInHour = 1000 * 60 * 60;
+				const millisecondsInDay = 1000 * 60 * 60 * 24;
+				const millisecondsInMonth = millisecondsInDay * 30.44;
+				const millisecondsInYear = millisecondsInMonth * 12;
+				const totalDaysDifference = Math.floor(dataEmMs / millisecondsInDay);
+				const totalSecondsDifference = Math.floor(dataEmMs / 1000);
+				const yearDifference = Math.floor(dataEmMs / millisecondsInYear);
+				const monthDifference = Math.floor(dataEmMs / millisecondsInMonth);
+				const dayDifference = Math.floor((dataEmMs % millisecondsInMonth) / millisecondsInDay);
+				const hourDifference = Math.floor((dataEmMs % millisecondsInDay) / millisecondsInHour);
+				const minuteDifference = Math.floor((dataEmMs % millisecondsInHour) / millisecondsInMinute)
+				const secondDifference = Math.floor((dataEmMs % millisecondsInMinute) / 1000)
+				
+				return {
+					'totalSegundos': totalSecondsDifference,
+					'totalDias': totalDaysDifference,
+					'segundos': secondDifference,
+					'minutos': minuteDifference,
+					'horas': hourDifference,
+					'dias': dayDifference,
+					'meses': monthDifference,
+					'anos': yearDifference
+				}
+			};
+
+			// Função para contar o valor economizado por segundo
+			function CalculaEconomia(mediaSegundo, segundos) {
+				
+				const resultadoCalculo = (mediaSegundo * segundos);
+				const formatoBRL = new Intl.NumberFormat('pt-BR', { 
+					style: 'currency', 
+					currency: 'BRL' 
+				}).format(resultadoCalculo);
+				return formatoBRL;
+			};
+			
+			
+			// Função para atualizar o contador na tela
+			function AtualizaContador() {
+				const timeDifferenceMS = MsDiff(startDate);
+				const timeDiff = ConvertMS(timeDifferenceMS);
+				const valorEconomizado = CalculaEconomia(mediaPorSegundo, timeDiff.totalSegundos);
+			
+				document.getElementById('calculoEconomia').innerHTML = valorEconomizado;
+				document.getElementById('textoIntro').innerHTML = `Sóbrio desde o dia <strong>${startDateFormatado}</strong> - <strong>${timeDiff.totalDias}</strong> dias`;
+				document.getElementById('contagemDias').innerHTML = 
+					`<strong>${timeDiff.anos}</strong> anos, 
+					<strong>${timeDiff.meses}</strong> meses, 
+					<strong>${timeDiff.dias}</strong> dias, 
+					<strong>${timeDiff.horas}</strong> horas, 
+					<strong>${timeDiff.minutos}</strong> minutos e
+					<strong>${timeDiff.segundos}</strong> segundos`;
+			}
+
+			// Atualiza o contador a cada 1 segundo
+			setInterval(AtualizaContador, 1000);
+			
+			// Atualiza o contador na primeira carga da página
+			AtualizaContador();
+			
+			console.log('Fim do código');
+		}
+	</script>
+	<style type="text/CSS">
+		h1 {
+			font-size: 20pt;
+			text-transform: uppercase;
+			color: rgb(87, 86, 87)
+		}
+		body {
+			margin: 0;
+			background-color: #f2f2f3;
+			font-family: 'Poppins', sans-serif;
+			font-weight: 300;
+			font-size: 14pt;
+		}
+
+		#wrapper {
+			margin: 15% auto;
+			text-align: center;
+		}
+
+		#content {
+			margin: auto;
+			background-color: #FFF;
+			max-width: 85%;
+			text-align: center;
+			border-radius: 10px;
+			padding: 15px
+		}
+		
+		#content p strong, #calculoEconomia {
+			font-weight: 500;
+		}
+		.sign {
+			font-size: 10pt;
+			color: rgb(138, 138, 138);
+			font-family: 'Courier New', Courier, monospace;
+		}
+	</style>
+</head>
+<body>
+	<div id="wrapper">
+		<h1>Calculadora de Sobriedade</h1>
+		<div id="content">
+			<p><span id="textoIntro"></span><strong id="diaInicial"></strong></p>
+			<p><span id="contagemDias"></span></p>
+			<p style="font-size: 22pt; color: rgba(163, 157, 162, 0.932); font-weight: 500; margin: 15px;">Parabéns, seu corno!</p>
+			<div id="contador">
+				<p>Você já economizou <span id="calculoEconomia"></span></p>
+			</div>
+		</div>
+		<p class="sign">Criado com carinho em 17/02/2025</p>
+	</div>
+</body>
+</html>

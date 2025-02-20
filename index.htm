@@ -15,11 +15,7 @@ v3 - Calculadora de economia desde a parada
 		window.onload = function() {
 			console.log('Início');
 			const startDate = new Date(2023, 10, 19, 3); // mês com base 0, às 3h
-			const startDateFormatado = FormatDate(startDate);
-			const valorCarteira = 10
-			const carteiraPorDia = 10
-			const mediaPorSegundo = (valorCarteira * carteiraPorDia) / (60 * 60 * 24)
-
+			
 			function FormatDate(data) { // Formata uma data no formato DD/MM/AA com zeros na frente
 				const day = String(data.getDate()).padStart(2, '0');
 				const month = String(data.getMonth() + 1).padStart(2, '0');
@@ -27,6 +23,11 @@ v3 - Calculadora de economia desde a parada
 				const formattedDate = `${day}/${month}/${year}`;
 				return formattedDate;
 			};
+
+			const startDateFormatado = FormatDate(startDate);
+			const valorCarteira = 10
+			const carteiraPorDia = 10
+			const mediaPorSegundo = (valorCarteira * carteiraPorDia) / (60 * 60 * 24)
 			
 			function MsDiff(data) { // Calcula a diferença de uma data até a data de hoje em Milissegundos
 				const today = new Date(); // Atualiza a data atual
@@ -49,16 +50,75 @@ v3 - Calculadora de economia desde a parada
 				const hourDifference = Math.floor((dataEmMs % millisecondsInDay) / millisecondsInHour);
 				const minuteDifference = Math.floor((dataEmMs % millisecondsInHour) / millisecondsInMinute)
 				const secondDifference = Math.floor((dataEmMs % millisecondsInMinute) / 1000)
-				
+
+				let anosCaption = 'anos';
+				if (yearDifference == 1) {
+					anosCaption = 'ano';
+				}
+
+				let mesesCaption = 'meses';
+				if (monthDifference == 1) {
+					mesesCaption = 'mês';
+				}
+
+				let totalDiasCaption = 'dias';
+				if (totalDaysDifference == 1) {
+					totalDiasCaption = 'dia';
+				}
+
+				let diasCaption = 'dias';
+				if (dayDifference == 1) {
+					diasCaption = 'dia';
+				}
+
+				let horasCaption = 'horas';
+				if (hourDifference == 1) {
+					horasCaption = 'hora';
+				}
+
+				let minutosCaption = 'minutos';
+				if (minuteDifference == 1) {
+					minutosCaption = 'minuto';
+				}
+
+				let segundosCaption = 'segundos';
+				if (secondDifference == 1) {
+					segundosCaption = 'segundo';
+				}
+
 				return {
-					'totalSegundos': totalSecondsDifference,
-					'totalDias': totalDaysDifference,
-					'segundos': secondDifference,
-					'minutos': minuteDifference,
-					'horas': hourDifference,
-					'dias': dayDifference,
-					'meses': monthDifference,
-					'anos': yearDifference
+					'totalSegundos': {
+						'diff': totalSecondsDifference,
+						'caption': segundosCaption
+					},
+					'totalDias': {
+						'diff': totalDaysDifference,
+						'caption': totalDiasCaption
+					},
+					'segundos': {
+						'diff': secondDifference,
+						'caption': segundosCaption
+					},
+					'minutos': {
+						'diff': minuteDifference,
+						'caption': minutosCaption
+					},
+					'horas': {
+						'diff': hourDifference,
+						'caption': horasCaption
+					},
+					'dias': {
+						'diff': dayDifference,
+						'caption': diasCaption
+					},
+					'meses': {
+						'diff': monthDifference,
+						'caption': mesesCaption
+					},
+					'anos': {
+						'diff': yearDifference,
+						'caption': anosCaption
+					},
 				}
 			};
 
@@ -78,17 +138,17 @@ v3 - Calculadora de economia desde a parada
 			function AtualizaContador() {
 				const timeDifferenceMS = MsDiff(startDate);
 				const timeDiff = ConvertMS(timeDifferenceMS);
-				const valorEconomizado = CalculaEconomia(mediaPorSegundo, timeDiff.totalSegundos);
+				const valorEconomizado = CalculaEconomia(mediaPorSegundo, timeDiff.totalSegundos.diff);
 			
 				document.getElementById('calculoEconomia').innerHTML = valorEconomizado;
-				document.getElementById('textoIntro').innerHTML = `Sóbrio desde o dia <strong>${startDateFormatado}</strong> - <strong>${timeDiff.totalDias}</strong> dias`;
+				document.getElementById('textoIntro').innerHTML = `Sóbrio desde o dia <strong>${startDateFormatado}</strong> - <strong>${timeDiff.totalDias.diff}</strong> ${timeDiff.totalDias.caption}`;
 				document.getElementById('contagemDias').innerHTML = 
-					`<strong>${timeDiff.anos}</strong> anos, 
-					<strong>${timeDiff.meses}</strong> meses, 
-					<strong>${timeDiff.dias}</strong> dias, 
-					<strong>${timeDiff.horas}</strong> horas, 
-					<strong>${timeDiff.minutos}</strong> minutos e
-					<strong>${timeDiff.segundos}</strong> segundos`;
+					`<strong>${timeDiff.anos.diff}</strong> ${timeDiff.anos.caption}, 
+					<strong>${timeDiff.meses.diff}</strong> ${timeDiff.meses.caption}, 
+					<strong>${timeDiff.dias.diff}</strong> ${timeDiff.dias.caption}, 
+					<strong>${timeDiff.horas.diff}</strong> ${timeDiff.horas.caption}, 
+					<strong>${timeDiff.minutos.diff}</strong> ${timeDiff.minutos.caption} e
+					<strong>${timeDiff.segundos.diff}</strong> ${timeDiff.segundos.caption}`;
 			}
 
 			// Atualiza o contador a cada 1 segundo
